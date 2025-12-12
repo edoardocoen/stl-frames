@@ -64,6 +64,12 @@ function normalizeParams(params) {
     }
   }
 
+  sane.width = Math.max(120, sane.width);
+  sane.height = Math.max(120, sane.height);
+  sane.faceWidth = Math.min(Math.max(8, sane.faceWidth), 120);
+  sane.profileDepth = Math.min(Math.max(8, sane.profileDepth), 120);
+  sane.clearance = Math.max(0, sane.clearance);
+
   if (sane.lipWidth >= sane.faceWidth) {
     sane.lipWidth = Math.max(2, sane.faceWidth * 0.45);
   }
@@ -93,13 +99,14 @@ function buildProfileShape({ faceWidth, profileDepth, lipWidth, lipDepth }) {
 }
 
 function carveWoodgrain(geometry, length, intensity = 0.55) {
+  const safeLength = Math.max(1, length);
   const position = geometry.attributes.position;
   const normal = geometry.attributes.normal;
   for (let i = 0; i < position.count; i++) {
     const z = position.getZ(i);
     const x = position.getX(i);
-    const grainWave = Math.sin((z / length) * Math.PI * 8 + x * 0.08);
-    const ripple = Math.cos((z / length) * Math.PI * 3) * 0.6;
+    const grainWave = Math.sin((z / safeLength) * Math.PI * 8 + x * 0.08);
+    const ripple = Math.cos((z / safeLength) * Math.PI * 3) * 0.6;
     const bump = (grainWave + ripple) * intensity;
     position.setX(i, x + bump * 0.15);
     position.setY(i, position.getY(i) + bump * 0.35);
@@ -131,10 +138,11 @@ function addMiterEnds(geometry, length, params) {
 
 function createPiece(length, orientation, params) {
   const { faceWidth, profileDepth, lipWidth, lipDepth, style } = params;
+  const safeLength = Math.max(1, length);
   const shape = buildProfileShape({ faceWidth, profileDepth, lipWidth, lipDepth });
   const bevel = style === 'bold';
   const extrudeSettings = {
-    depth: length,
+    depth: safeLength,
     bevelEnabled: bevel,
     bevelThickness: bevel ? 1.2 : 0,
     bevelSize: bevel ? 0.8 : 0,
@@ -142,9 +150,9 @@ function createPiece(length, orientation, params) {
   };
 
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-  geometry.translate(-faceWidth / 2, -profileDepth / 2, -length / 2);
+  geometry.translate(-faceWidth / 2, -profileDepth / 2, -safeLength / 2);
 
-  addMiterEnds(geometry, length, params);
+  addMiterEnds(geometry, safeLength, params);
 
   if (style === 'wood') {
     carveWoodgrain(geometry, length);
@@ -225,8 +233,8 @@ function buildFrame(params) {
   const innerWidth = width + clearance * 2;
   const innerHeight = height + clearance * 2;
 
-  const horizontalLength = innerWidth + lipWidth * 2;
-  const verticalLength = innerHeight + lipWidth * 2;
+  const horizontalLength = Math.max(1, innerWidth + lipWidth * 2);
+  const verticalLength = Math.max(1, innerHeight + lipWidth * 2);
   const offsetX = innerWidth / 2;
   const offsetY = innerHeight / 2;
 
