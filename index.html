@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame Builder - STL generator</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/exporters/STLExporter.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero__text">
+      <p class="eyebrow">Maker-ready</p>
+      <h1>Generator di cornici modulari in STL</h1>
+      <p class="lede">
+        Crea cornici su misura per poster, stampe o quadri con stili diversi e scarica gli STL già divisi in pezzi stampabili.
+      </p>
+    </div>
+    <div class="hero__cta">
+      <button id="downloadZip" class="btn primary">Scarica i pezzi STL</button>
+      <button id="resetDefaults" class="btn ghost">Reset</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <h2>Dimensioni e stile</h2>
+      <div class="grid">
+        <label class="field">
+          <span>Larghezza poster (mm)</span>
+          <input type="number" id="width" min="100" value="600" />
+        </label>
+        <label class="field">
+          <span>Altezza poster (mm)</span>
+          <input type="number" id="height" min="100" value="400" />
+        </label>
+        <label class="field">
+          <span>Spessore faccia (mm)</span>
+          <input type="number" id="faceWidth" min="10" value="20" />
+        </label>
+        <label class="field">
+          <span>Profondità profilo (mm)</span>
+          <input type="number" id="profileDepth" min="8" value="14" />
+        </label>
+        <label class="field">
+          <span>Larghezza battuta (mm)</span>
+          <input type="number" id="lipWidth" min="2" value="4" />
+        </label>
+        <label class="field">
+          <span>Profondità battuta (mm)</span>
+          <input type="number" id="lipDepth" min="2" value="4" />
+        </label>
+        <label class="field">
+          <span>Offset tolleranza (mm)</span>
+          <input type="number" id="clearance" min="0" step="0.1" value="0.4" />
+        </label>
+        <label class="field">
+          <span>Stile</span>
+          <select id="style">
+            <option value="minimal">Minimal</option>
+            <option value="wood">Effetto legno</option>
+            <option value="bold">Bold con smusso</option>
+          </select>
+        </label>
+      </div>
+      <p class="hint">Anteprima aggiornata in tempo reale: ruota la scena con il mouse e usa la rotellina per zoomare.</p>
+    </section>
+
+    <section class="panel preview">
+      <div class="preview__meta">
+        <div>
+          <h2>Anteprima 3D</h2>
+          <p id="summary"></p>
+        </div>
+        <button id="updatePreview" class="btn">Aggiorna</button>
+      </div>
+      <canvas id="viewport" aria-label="Anteprima cornice 3D"></canvas>
+      <div class="legend">
+        <div class="legend__item"><span class="swatch swatch--frame"></span>Profilo esterno</div>
+        <div class="legend__item"><span class="swatch swatch--lip"></span>Battuta interna</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Cosa ottieni</h2>
+      <ul class="deliverables">
+        <li>4 STL (alto, basso, sinistra, destra) con battuta per inserire il pannello.</li>
+        <li>Profilo parametrico per adattarsi a poster e cornici anche molto grandi.</li>
+        <li>Stili diversi: minimal, effetto legno leggero, o bold smussato.</li>
+      </ul>
+      <p class="hint">Suggerimento: stampa due pezzi per lato se hai un piatto piccolo, poi incollali. Gli STL esportati includono già un offset di montaggio per tolleranza (configurabile).</p>
+    </section>
+  </main>
+
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>
