@@ -1,0 +1,197 @@
+:root {
+  --bg: #0d1b2a;
+  --panel: #12263a;
+  --accent: #c3f0ca;
+  --muted: #9fb3c8;
+  --text: #e9eef5;
+  --border: #223549;
+  --lip: #ffb347;
+  --frame: #7cc7ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem clamp(1.5rem, 3vw, 3rem);
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(circle at 20% 20%, rgba(124, 199, 255, 0.2), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(255, 179, 71, 0.12), transparent 35%),
+    var(--panel);
+}
+
+.hero h1 {
+  margin: 0.2rem 0 0.8rem;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+}
+
+.hero__text { max-width: 720px; }
+
+.eyebrow {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 0;
+}
+
+.lede { margin: 0; color: var(--text); opacity: 0.86; line-height: 1.6; }
+
+.hero__cta { display: flex; gap: 0.75rem; }
+
+.btn {
+  padding: 0.8rem 1.4rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0f2033;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+
+.btn.primary { background: linear-gradient(90deg, #60b4ff, #4ae3b5); color: #0a1727; border: none; }
+
+.btn.ghost { background: transparent; }
+
+.layout {
+  padding: clamp(1.25rem, 3vw, 2rem);
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.panel h2 { margin: 0 0 0.6rem; }
+
+
+.sidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+.sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  background: #0f2033;
+  color: var(--text);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+}
+
+.hint { margin: 0.75rem 0 0; color: var(--muted); }
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.preview__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.viewport__frame {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: radial-gradient(circle at 18% 22%, rgba(124, 199, 255, 0.12), transparent 36%), #0b1623;
+  padding: 0.65rem;
+}
+
+#viewport {
+  width: 100%;
+  height: clamp(340px, 55vh, 640px);
+  display: block;
+  border-radius: 10px;
+  border: 1px solid #102132;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  color: var(--muted);
+}
+
+.legend__item { display: flex; align-items: center; gap: 0.5rem; }
+
+.swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.swatch--frame { background: var(--frame); }
+.swatch--lip { background: var(--lip); }
+
+.deliverables {
+  margin: 0.2rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.tag {
+  border: 1px solid var(--border);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 700;
+  background: rgba(124, 199, 255, 0.07);
+}
+
+@media (max-width: 760px) {
+  .hero { flex-direction: column; align-items: flex-start; }
+  .hero__cta { width: 100%; }
+  .hero__cta .btn { flex: 1; text-align: center; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+}
