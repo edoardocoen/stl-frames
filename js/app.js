@@ -92,17 +92,40 @@ function buildProfileShape({ faceWidth, profileDepth, lipWidth, lipDepth }) {
   return shape;
 }
 
-function jitterWood(geometry, intensity = 0.35) {
+function carveWoodgrain(geometry, length, intensity = 0.55) {
   const position = geometry.attributes.position;
+  const normal = geometry.attributes.normal;
   for (let i = 0; i < position.count; i++) {
-    const stride = i * 3;
-    const x = position.getX(i);
     const z = position.getZ(i);
-    const noise = Math.sin(x * 0.18) * Math.cos(z * 0.12) * intensity;
-    position.setX(i, x + noise * 0.6);
-    position.setZ(i, z + noise);
+    const x = position.getX(i);
+    const grainWave = Math.sin((z / length) * Math.PI * 8 + x * 0.08);
+    const ripple = Math.cos((z / length) * Math.PI * 3) * 0.6;
+    const bump = (grainWave + ripple) * intensity;
+    position.setX(i, x + bump * 0.15);
+    position.setY(i, position.getY(i) + bump * 0.35);
   }
   position.needsUpdate = true;
+  normal.needsUpdate = true;
+  geometry.computeVertexNormals();
+}
+
+function addMiterEnds(geometry, length, params) {
+  const { faceWidth, profileDepth } = params;
+  const half = length / 2;
+  const taperSpan = Math.max(faceWidth, profileDepth) * 1.1;
+  const pos = geometry.attributes.position;
+  for (let i = 0; i < pos.count; i++) {
+    const z = pos.getZ(i);
+    const distanceFromEnd = half - Math.abs(z);
+    if (distanceFromEnd >= taperSpan || distanceFromEnd < 0) continue;
+    const t = 1 - distanceFromEnd / taperSpan;
+    const sign = Math.sign(z);
+    const skew = (faceWidth + profileDepth * 0.8) * t * sign;
+    pos.setX(i, pos.getX(i) + skew);
+    pos.setY(i, pos.getY(i) + skew * 0.55);
+  }
+  pos.needsUpdate = true;
+  geometry.computeBoundingBox();
   geometry.computeVertexNormals();
 }
 
@@ -121,8 +144,10 @@ function createPiece(length, orientation, params) {
   const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
   geometry.translate(-faceWidth / 2, -profileDepth / 2, -length / 2);
 
+  addMiterEnds(geometry, length, params);
+
   if (style === 'wood') {
-    jitterWood(geometry);
+    carveWoodgrain(geometry, length);
   }
 
   if (orientation === 'horizontal') {
@@ -132,8 +157,8 @@ function createPiece(length, orientation, params) {
   }
 
   const material = new THREE.MeshStandardMaterial({
-    color: style === 'wood' ? 0xb18f6a : style === 'bold' ? 0x7cc7ff : 0x9ad4ff,
-    roughness: style === 'wood' ? 0.8 : 0.45,
+    color: style === 'wood' ? 0xae8a63 : style === 'bold' ? 0x7cc7ff : 0x9ad4ff,
+    roughness: style === 'wood' ? 0.9 : 0.45,
     metalness: 0.05,
   });
 
@@ -158,7 +183,33 @@ function createLipOverlay(length, orientation, params) {
   }
   geometry.translate(0, 0, -length / 2);
 
-  const material = new THREE.MeshStandardMaterial({ color: 0xffb347, metalness: 0.05, roughness: 0.3 });
+  const material = new THREE.MeshStandardMaterial({ color: 0xffe0a3, metalness: 0.05, roughness: 0.45, transparent: true, opacity: 0.7 });
+  return new THREE.Mesh(geometry, material);
+}
+
+function createCornerInsert(params) {
+  const { faceWidth, profileDepth, lipDepth, clearance } = params;
+  const insertThickness = Math.max(3, profileDepth * 0.35);
+  const insertLeg = Math.max(24, faceWidth * 1.4);
+  const taper = Math.max(6, faceWidth * 0.4);
+
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  shape.lineTo(insertLeg, 0);
+  shape.lineTo(insertLeg, insertThickness);
+  shape.lineTo(taper, insertThickness);
+  shape.lineTo(taper, insertLeg);
+  shape.lineTo(0, insertLeg);
+  shape.lineTo(0, 0);
+
+  const geometry = new THREE.ExtrudeGeometry(shape, {
+    depth: Math.max(6, lipDepth * 1.1 + clearance),
+    bevelEnabled: false,
+  });
+
+  geometry.translate(-insertLeg / 2, -insertLeg / 2, -geometry.parameters.depth / 2);
+
+  const material = new THREE.MeshStandardMaterial({ color: 0x72f1b8, roughness: 0.5, metalness: 0.05 });
   return new THREE.Mesh(geometry, material);
 }
 
@@ -200,7 +251,23 @@ function buildFrame(params) {
   const lipRight = createLipOverlay(verticalLength, 'vertical', safeParams);
   lipRight.position.copy(right.position);
 
-  frameGroup.add(top, bottom, left, right, lipTop, lipBottom, lipLeft, lipRight);
+  const insert = createCornerInsert(safeParams);
+  const insertOffset = Math.min(innerWidth, innerHeight) * 0.25;
+  const inserts = [
+    insert.clone(),
+    insert.clone(),
+    insert.clone(),
+    insert.clone(),
+  ];
+  inserts[0].position.set(offsetX - insertOffset, offsetY - insertOffset, lipDepth * 0.2);
+  inserts[1].position.set(offsetX - insertOffset, -(offsetY - insertOffset), lipDepth * 0.2);
+  inserts[1].rotation.z = Math.PI / 2;
+  inserts[2].position.set(-(offsetX - insertOffset), offsetY - insertOffset, lipDepth * 0.2);
+  inserts[2].rotation.z = -Math.PI / 2;
+  inserts[3].position.set(-(offsetX - insertOffset), -(offsetY - insertOffset), lipDepth * 0.2);
+  inserts[3].rotation.z = Math.PI;
+
+  frameGroup.add(top, bottom, left, right, lipTop, lipBottom, lipLeft, lipRight, ...inserts);
   scene.add(frameGroup);
 
   const outerWidth = innerWidth + faceWidth * 2;
@@ -292,14 +359,22 @@ async function downloadZip() {
     { name: 'frame_bottom.stl', length: horizontalLength, orientation: 'horizontal' },
     { name: 'frame_left.stl', length: verticalLength, orientation: 'vertical' },
     { name: 'frame_right.stl', length: verticalLength, orientation: 'vertical' },
+    { name: 'corner_insert_A.stl', insert: true },
+    { name: 'corner_insert_B.stl', insert: true },
   ];
 
   const zip = new JSZip();
   pieces.forEach((piece) => {
-    const mesh = createPiece(piece.length, piece.orientation, params);
-    mesh.position.copy(new THREE.Vector3());
-    const stlString = exporter.parse(mesh);
-    zip.file(piece.name, stlString);
+    if (piece.insert) {
+      const connector = createCornerInsert(params);
+      const stlString = exporter.parse(connector);
+      zip.file(piece.name, stlString);
+    } else {
+      const mesh = createPiece(piece.length, piece.orientation, params);
+      mesh.position.copy(new THREE.Vector3());
+      const stlString = exporter.parse(mesh);
+      zip.file(piece.name, stlString);
+    }
   });
 
   const blob = await zip.generateAsync({ type: 'blob' });
