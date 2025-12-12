@@ -1,10 +1,12 @@
 # STL Frame Builder
 
-Applicazione statica (hostabile su GitHub Pages) che genera cornici parametriche in STL e mostra l'anteprima 3D in tempo reale. Puoi scegliere dimensioni e stile del profilo, quindi scaricare i 4 pezzi già separati (alto, basso, sinistra, destra) in un unico ZIP.
+Applicazione statica (hostabile su GitHub Pages) che genera cornici parametriche in STL e mostra l'anteprima 3D in tempo reale.
+Puoi scegliere dimensioni e stile del profilo, quindi scaricare i 4 pezzi già separati (alto, basso, sinistra, destra) in un unico ZIP.
 
 ## Come provarlo
 1. Abilita **GitHub Pages** sulla branch corrente (origine della repo) e pubblica la root. L'app è statica e non richiede build.
-2. Apri la pagina pubblicata oppure esegui un server locale `python -m http.server 8000` dalla root del repo e visita `http://localhost:8000`.
+2. Dopo la pubblicazione, il sito sarà disponibile all'URL `https://<tuo-utente>.github.io/stl-frames/` (sostituisci `<tuo-utente>` con il tuo username GitHub). In alternativa, se utilizzi un'organizzazione, l'indirizzo sarà `https://<org>.github.io/stl-frames/`.
+3. Per provarlo in locale, esegui un server `python -m http.server 8000` dalla root del repo e visita `http://localhost:8000`.
 
 ## Funzionalità
 - Parametri modificabili: larghezza/altezza poster, larghezza e profondità del profilo, dimensioni battuta, tolleranza e stile.
