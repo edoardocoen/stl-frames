@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Frame Builder - STL generator</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js",
+        "three/examples/jsm/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js",
+        "three/examples/jsm/exporters/STLExporter.js": "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/exporters/STLExporter.js",
+        "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm"
+      }
+    }
+  </script>
 </head>
 <body>
   <header class="hero">
@@ -15,10 +25,6 @@
         Crea cornici su misura per poster, stampe o quadri con stili diversi e scarica gli STL già divisi in pezzi stampabili.
       </p>
     </div>
-    <div class="hero__cta">
-      <button id="downloadZip" class="btn primary">Scarica i pezzi STL</button>
-      <button id="resetDefaults" class="btn ghost">Reset</button>
-    </div>
   </header>
 
   <main class="layout">
@@ -28,7 +34,6 @@
           <p class="eyebrow">Setup</p>
           <h2>Dimensioni e stile</h2>
         </div>
-        <button id="updatePreview" class="btn">Aggiorna</button>
       </div>
       <div class="stack">
         <label class="field">
@@ -68,6 +73,11 @@
           </select>
         </label>
         <p class="hint">L'anteprima si aggiorna appena cambi un valore. Usa il mouse per ruotare e la rotellina per zoomare.</p>
+        <div class="actions">
+          <button id="updatePreview" class="btn">Aggiorna anteprima</button>
+          <button id="downloadZip" class="btn primary">Scarica i pezzi STL</button>
+          <button id="resetDefaults" class="btn ghost">Reset valori</button>
+        </div>
       </div>
     </aside>
 

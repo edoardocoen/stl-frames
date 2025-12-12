@@ -48,7 +48,15 @@ body {
 
 .lede { margin: 0; color: var(--text); opacity: 0.86; line-height: 1.6; }
 
-.hero__cta { display: flex; gap: 0.75rem; }
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+
+.actions .btn { width: 100%; text-align: center; }
 
 .btn {
   padding: 0.8rem 1.4rem;
@@ -190,8 +198,6 @@ body {
 
 @media (max-width: 760px) {
   .hero { flex-direction: column; align-items: flex-start; }
-  .hero__cta { width: 100%; }
-  .hero__cta .btn { flex: 1; text-align: center; }
   .layout { grid-template-columns: 1fr; }
   .sidebar { position: static; }
 }

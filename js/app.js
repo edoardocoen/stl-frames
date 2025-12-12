@@ -1,7 +1,7 @@
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
-import { STLExporter } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/exporters/STLExporter.js';
-import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { STLExporter } from 'three/examples/jsm/exporters/STLExporter.js';
+import JSZip from 'jszip';
 
 const ui = {
   width: document.getElementById('width'),
