@@ -41,6 +41,34 @@ function readParams() {
   };
 }
 
+function normalizeParams(params) {
+  const sane = { ...params };
+  const numericDefaults = {
+    width: defaults.width,
+    height: defaults.height,
+    faceWidth: defaults.faceWidth,
+    profileDepth: defaults.profileDepth,
+    lipWidth: defaults.lipWidth,
+    lipDepth: defaults.lipDepth,
+    clearance: defaults.clearance,
+  };
+
+  for (const [key, fallback] of Object.entries(numericDefaults)) {
+    if (!Number.isFinite(sane[key]) || sane[key] <= 0) {
+      sane[key] = fallback;
+    }
+  }
+
+  if (sane.lipWidth >= sane.faceWidth) {
+    sane.lipWidth = Math.max(2, sane.faceWidth * 0.45);
+  }
+  if (sane.lipDepth >= sane.profileDepth) {
+    sane.lipDepth = Math.max(2, sane.profileDepth * 0.35);
+  }
+
+  return sane;
+}
+
 function setDefaults() {
   Object.entries(defaults).forEach(([key, value]) => {
     ui[key].value = value;
@@ -130,12 +158,14 @@ function createLipOverlay(length, orientation, params) {
 }
 
 function buildFrame(params) {
+  const safeParams = normalizeParams(params);
+
   if (frameGroup) {
     scene.remove(frameGroup);
   }
   frameGroup = new THREE.Group();
 
-  const { width, height, faceWidth, lipWidth, clearance } = params;
+  const { width, height, faceWidth, lipWidth, clearance } = safeParams;
   const innerWidth = width + clearance * 2;
   const innerHeight = height + clearance * 2;
 
@@ -144,25 +174,25 @@ function buildFrame(params) {
   const offsetX = innerWidth / 2;
   const offsetY = innerHeight / 2;
 
-  const top = createPiece(horizontalLength, 'horizontal', params);
+  const top = createPiece(horizontalLength, 'horizontal', safeParams);
   top.position.y = offsetY + (faceWidth - lipWidth) / 2;
 
-  const bottom = createPiece(horizontalLength, 'horizontal', params);
+  const bottom = createPiece(horizontalLength, 'horizontal', safeParams);
   bottom.position.y = -(offsetY + (faceWidth - lipWidth) / 2);
 
-  const left = createPiece(verticalLength, 'vertical', params);
+  const left = createPiece(verticalLength, 'vertical', safeParams);
   left.position.x = -(offsetX + (faceWidth - lipWidth) / 2);
 
-  const right = createPiece(verticalLength, 'vertical', params);
+  const right = createPiece(verticalLength, 'vertical', safeParams);
   right.position.x = offsetX + (faceWidth - lipWidth) / 2;
 
-  const lipTop = createLipOverlay(horizontalLength, 'horizontal', params);
+  const lipTop = createLipOverlay(horizontalLength, 'horizontal', safeParams);
   lipTop.position.copy(top.position);
-  const lipBottom = createLipOverlay(horizontalLength, 'horizontal', params);
+  const lipBottom = createLipOverlay(horizontalLength, 'horizontal', safeParams);
   lipBottom.position.copy(bottom.position);
-  const lipLeft = createLipOverlay(verticalLength, 'vertical', params);
+  const lipLeft = createLipOverlay(verticalLength, 'vertical', safeParams);
   lipLeft.position.copy(left.position);
-  const lipRight = createLipOverlay(verticalLength, 'vertical', params);
+  const lipRight = createLipOverlay(verticalLength, 'vertical', safeParams);
   lipRight.position.copy(right.position);
 
   frameGroup.add(top, bottom, left, right, lipTop, lipBottom, lipLeft, lipRight);
@@ -171,6 +201,8 @@ function buildFrame(params) {
   const outerWidth = innerWidth + faceWidth * 2;
   const outerHeight = innerHeight + faceWidth * 2;
   ui.summary.textContent = `Luce utile ${innerWidth.toFixed(1)} x ${innerHeight.toFixed(1)} mm — ingombro esterno ${outerWidth.toFixed(1)} x ${outerHeight.toFixed(1)} mm.`;
+
+  fitCameraToFrame(frameGroup);
 }
 
 function initThree() {
@@ -202,6 +234,24 @@ function initThree() {
   animate();
 }
 
+function fitCameraToFrame(object3d) {
+  const box = new THREE.Box3().setFromObject(object3d);
+  const size = new THREE.Vector3();
+  const center = new THREE.Vector3();
+  box.getSize(size);
+  box.getCenter(center);
+
+  const maxSize = Math.max(size.x, size.y, size.z);
+  const fitHeightDistance = maxSize / (2 * Math.atan((Math.PI * camera.fov) / 360));
+  const fitWidthDistance = fitHeightDistance / camera.aspect;
+  const distance = Math.max(fitHeightDistance, fitWidthDistance) * 1.25;
+
+  camera.position.set(center.x + distance, center.y + distance * 0.55, center.z + distance);
+  camera.lookAt(center);
+  controls.target.copy(center);
+  controls.update();
+}
+
 function resize() {
   const width = ui.canvas.clientWidth;
   const height = ui.canvas.clientHeight;
@@ -225,7 +275,7 @@ function debounce(fn, wait = 180) {
 }
 
 async function downloadZip() {
-  const params = readParams();
+  const params = normalizeParams(readParams());
   const { width, height, lipWidth, clearance } = params;
   const innerWidth = width + clearance * 2;
   const innerHeight = height + clearance * 2;

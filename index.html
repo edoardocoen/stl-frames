@@ -26,9 +26,15 @@
   </header>
 
   <main class="layout">
-    <section class="panel">
-      <h2>Dimensioni e stile</h2>
-      <div class="grid">
+    <aside class="sidebar panel">
+      <div class="sidebar__header">
+        <div>
+          <p class="eyebrow">Setup</p>
+          <h2>Dimensioni e stile</h2>
+        </div>
+        <button id="updatePreview" class="btn">Aggiorna</button>
+      </div>
+      <div class="stack">
         <label class="field">
           <span>Larghezza poster (mm)</span>
           <input type="number" id="width" min="100" value="600" />
@@ -65,33 +71,38 @@
             <option value="bold">Bold con smusso</option>
           </select>
         </label>
+        <p class="hint">L'anteprima si aggiorna appena cambi un valore. Usa il mouse per ruotare e la rotellina per zoomare.</p>
       </div>
-      <p class="hint">Anteprima aggiornata in tempo reale: ruota la scena con il mouse e usa la rotellina per zoomare.</p>
-    </section>
+    </aside>
 
-    <section class="panel preview">
-      <div class="preview__meta">
-        <div>
-          <h2>Anteprima 3D</h2>
-          <p id="summary"></p>
+    <section class="content">
+      <section class="panel preview">
+        <div class="preview__meta">
+          <div>
+            <p class="eyebrow">Vista 3D</p>
+            <h2>Anteprima cornice</h2>
+            <p id="summary"></p>
+          </div>
+          <div class="tag">Live</div>
         </div>
-        <button id="updatePreview" class="btn">Aggiorna</button>
-      </div>
-      <canvas id="viewport" aria-label="Anteprima cornice 3D"></canvas>
-      <div class="legend">
-        <div class="legend__item"><span class="swatch swatch--frame"></span>Profilo esterno</div>
-        <div class="legend__item"><span class="swatch swatch--lip"></span>Battuta interna</div>
-      </div>
-    </section>
+        <div class="viewport__frame">
+          <canvas id="viewport" aria-label="Anteprima cornice 3D"></canvas>
+        </div>
+        <div class="legend">
+          <div class="legend__item"><span class="swatch swatch--frame"></span>Profilo esterno</div>
+          <div class="legend__item"><span class="swatch swatch--lip"></span>Battuta interna</div>
+        </div>
+      </section>
 
-    <section class="panel">
-      <h2>Cosa ottieni</h2>
-      <ul class="deliverables">
-        <li>4 STL (alto, basso, sinistra, destra) con battuta per inserire il pannello.</li>
-        <li>Profilo parametrico per adattarsi a poster e cornici anche molto grandi.</li>
-        <li>Stili diversi: minimal, effetto legno leggero, o bold smussato.</li>
-      </ul>
-      <p class="hint">Suggerimento: stampa due pezzi per lato se hai un piatto piccolo, poi incollali. Gli STL esportati includono già un offset di montaggio per tolleranza (configurabile).</p>
+      <section class="panel">
+        <h2>Cosa ottieni</h2>
+        <ul class="deliverables">
+          <li>4 STL (alto, basso, sinistra, destra) con battuta per inserire il pannello.</li>
+          <li>Profilo parametrico per poster grandi: modifica dimensioni e tolleranze in pochi click.</li>
+          <li>Stili diversi: minimal, effetto legno leggero o bold con smusso.</li>
+        </ul>
+        <p class="hint">Suggerimento: stampa due pezzi per lato se il piatto è piccolo. Gli STL includono già l'offset di tolleranza configurato.</p>
+      </section>
     </section>
   </main>
 
