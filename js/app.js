@@ -1,3 +1,8 @@
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
+import { STLExporter } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/exporters/STLExporter.js';
+import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
+
 const ui = {
   width: document.getElementById('width'),
   height: document.getElementById('height'),
@@ -26,7 +31,7 @@ const defaults = {
 };
 
 let scene, camera, renderer, controls, frameGroup;
-let exporter = new THREE.STLExporter();
+const exporter = new STLExporter();
 
 function readParams() {
   return {
@@ -215,7 +220,7 @@ function initThree() {
   camera = new THREE.PerspectiveCamera(45, 16 / 9, 0.1, 8000);
   camera.position.set(220, 180, 320);
 
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = 0.1;
   controls.target.set(0, 0, 0);
